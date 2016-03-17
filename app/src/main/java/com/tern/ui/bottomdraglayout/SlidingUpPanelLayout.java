@@ -11,6 +11,7 @@ import android.os.Parcelable;
 import android.support.v4.view.MotionEventCompat;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -260,6 +261,7 @@ public class SlidingUpPanelLayout extends ViewGroup {
 
         mDragHelper = ViewDragHelper.create(this, 0.5f, new DragHelperCallback());
         mDragHelper.setMinVelocity(DEFAULT_MIN_FLING_VELOCITY * density);
+        mDragHelper.setEdgeTrackingEnabled(ViewDragHelper.EDGE_BOTTOM);
 
         mIsTouchEnabled = true;
     }
@@ -1120,6 +1122,30 @@ public class SlidingUpPanelLayout extends ViewGroup {
 
     private class DragHelperCallback extends ViewDragHelper.Callback {
 
+
+        private final Runnable mPeekRunnable = new Runnable() {
+            @Override
+            public void run() {
+                peekDrawer();
+            }
+        };
+
+        private void peekDrawer() {
+            final View toCapture = mDragView;
+            // TODO: 16/3/10 we can design edge size.
+            final int peekDistance = mDragHelper.getEdgeSize();
+            final int childTop = getHeight() - peekDistance;
+
+            // Only peek if it would mean making the drawer more visible and the drawer isn't locked
+            // view 的 top值<屏幕高低-边缘的距离
+            if (toCapture != null && toCapture.getTop() > childTop) {
+                Log.i(TAG, "peekDrawer: toCapture.getTop() = "+ toCapture.getTop() + " childTop =  " + childTop );
+                mDragHelper.smoothSlideViewTo(toCapture, toCapture.getLeft(), childTop);
+                invalidate();
+            }
+        }
+
+
         @Override
         public boolean tryCaptureView(View child, int pointerId) {
             if (mIsUnableToDrag) {
@@ -1127,6 +1153,12 @@ public class SlidingUpPanelLayout extends ViewGroup {
             }
 
             return child == mSlideableView;
+        }
+
+        @Override
+        public void onEdgeTouched(int edgeFlags, int pointerId) {
+            Log.i(TAG, "onEdgeTouched: ");
+            postDelayed(mPeekRunnable, 100);
         }
 
         @Override

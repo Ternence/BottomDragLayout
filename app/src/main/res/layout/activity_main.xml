@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="bottom"
-    sothree:dragPanelHeight="50dp"
+    sothree:dragPanelHeight="0dp"
     sothree:dragDragView="@+id/dragView"
     sothree:dragOverlay="false"
     sothree:dragScrollableView="@+id/list">
