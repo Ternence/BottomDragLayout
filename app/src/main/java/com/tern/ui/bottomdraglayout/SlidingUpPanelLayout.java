@@ -1158,7 +1158,7 @@ public class SlidingUpPanelLayout extends ViewGroup {
         @Override
         public void onEdgeTouched(int edgeFlags, int pointerId) {
             Log.i(TAG, "onEdgeTouched: ");
-            postDelayed(mPeekRunnable, 100);
+            postDelayed(mPeekRunnable, 160);
         }
 
         @Override
